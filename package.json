@@ -1,0 +1,51 @@
+{
+  "name": "date-format-plugin",
+  "version": "0.0.2",
+  "description": "date-format-plugin",
+  "author": {
+    "name": "Mahdi Mohamadzadeh",
+    "email": "prowebsi998@gmail.com"
+  },
+  "license": "MIT",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "date-format-plugin"
+  ],
+  "main": "./dist/date-format-plugin.umd.cjs",
+  "module": "./dist/date-format-plugin.js",
+  "types": "./dist/main.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/date-format-plugin.js",
+      "require": "./dist/date-format-plugin.umd.cjs",
+      "types": "./dist/main.d.ts"
+    },
+    "./lottie": {
+      "import": "./dist/lottie"
+    }
+  },
+  "scripts": {
+    "start": "vite",
+    "dev": "vite",
+    "vite-build": "vite build",
+    "build": "vite build && vue-tsc --emitDeclarationOnly",
+    "pub": "npm run build && npm version patch --force && npm publish",
+    "preview": "vite preview"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "20.2.5",
+    "@vitejs/plugin-vue": "4.2.3",
+    "autoprefixer": "10.4.19",
+    "ts-node": "10.9.2",
+    "typescript": "5.0.2",
+    "vite": "4.5.1",
+    "vue": "^3.4.25",
+    "vue-router": "4.2.5",
+    "vue-tsc": "1.8.5",
+    "vue3-lottie": "3.2.0"
+  }
+}
