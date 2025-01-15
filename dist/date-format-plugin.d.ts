@@ -1,4 +1,6 @@
-import { LocalizationOptions } from "./date-format.type";
 import { Plugin } from "vue";
-declare const DateFormatPlugin: Plugin<LocalizationOptions>;
+import { LocalizationOptions } from "./date-format.type";
+declare const DateFormatPlugin: Plugin<LocalizationOptions & {
+    langKey: string;
+}>;
 export default DateFormatPlugin;

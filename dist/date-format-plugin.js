@@ -1,36 +1,38 @@
-const s = {
-  mounted(a, t) {
-    var o, l, c, f;
-    const { value: n } = t;
-    if (!n) {
-      console.error("binding.value is undefined");
-      return;
-    }
-    const { date: r, options: i } = n, e = (f = (c = (l = (o = t.instance) == null ? void 0 : o.$.appContext) == null ? void 0 : l.config) == null ? void 0 : c.globalProperties) == null ? void 0 : f.$formatDate;
-    typeof e == "function" ? a.textContent = e(r, i) : console.error("formatDate function is not available");
+function l(e) {
+  var f, m, c;
+  const t = (f = e.instance) == null ? void 0 : f.$.appContext.config.globalProperties.options;
+  if (!t)
+    throw new Error("Plugin options not set. Please configure the date format.");
+  let { date: a, options: r } = e.value;
+  a = new Date(a);
+  const o = r || t[t.langKey] || t.default || {};
+  o.year || (o.year = "numeric", o.month = "2-digit", o.day = "2-digit", o.hour = "2-digit", o.minute = "2-digit", o.second = "2-digit");
+  const u = new Intl.DateTimeFormat(t.langKey, o).formatToParts(a), s = {};
+  u.forEach((i) => {
+    i.type !== "literal" && (s[i.type] = i.value);
+  });
+  const n = (r == null ? void 0 : r.format) || ((m = t[t.langKey]) == null ? void 0 : m.format) || ((c = t == null ? void 0 : t.default) == null ? void 0 : c.format);
+  if (!n)
+    throw new Error("Custom format is not set. Please configure the date format.");
+  if (typeof n == "function")
+    return n(s);
+  throw new Error("customFormat is not a function");
+}
+const d = {
+  mounted(e, t) {
+    e.textContent = l(t);
   },
-  updated(a, t) {
-    var o;
-    const { value: n } = t, { date: r, options: i } = n, e = (o = t.instance) == null ? void 0 : o.$.appContext.config.globalProperties.$formatDate;
-    typeof e == "function" ? a.textContent = e(r, i) : console.error("formatDate function is not available");
+  updated(e, t) {
+    e.textContent = l(t);
   }
-}, u = {
-  install(a, t) {
-    if (!t || !t.default)
+}, w = {
+  install(e, t) {
+    if (!t)
       throw new Error('DateFormatPlugin requires a "option" value.');
-    const n = (r, i) => {
-      const e = r instanceof Date ? r : new Date(r), o = t.langKey || "VITE_APP_LANG", l = o === "fa" ? "fa-IR" : "en-US";
-      try {
-        const c = t[o] || t.default, f = i || c;
-        return e.toLocaleString(l, f);
-      } catch (c) {
-        return console.error("Date formatting error:", c), e.toLocaleDateString(l);
-      }
-    };
-    a.config.globalProperties.$formatDate = n, a.provide("formatDate", n), a.directive("format-date", s);
+    e.config.globalProperties.options = t, e.directive("format-date", d);
   }
 };
 export {
-  u as DateFormatPlugin,
-  s as vDateFormatDirective
+  w as DateFormatPlugin,
+  d as vDateFormatDirective
 };
