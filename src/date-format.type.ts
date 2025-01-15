@@ -1,4 +1,5 @@
+export type DateParts = (dateParts: any) => string;
 export interface LocalizationOptions {
-  default: Intl.DateTimeFormatOptions;
-  [key: string]: any;
+  default: Intl.DateTimeFormatOptions & { format: DateParts };
+  [key: string]: Intl.DateTimeFormatOptions & { format: DateParts };
 }

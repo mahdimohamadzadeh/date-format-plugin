@@ -3,9 +3,14 @@ import DateFormatPlugin from "../src/date-format-plugin";
 import { createApp } from "vue";
 const app = createApp(App);
 
-const dateFormatConfig = {
-  default: {},
-  langKey: "VITE_APP_LANG", // Add the environment key
+app.use(DateFormatPlugin, {
+  langKey: "fa", // can use env lang
+  default: {
+    format: (dateParts) => {
+      const retval = `${dateParts.month}/${dateParts.year}`;
+      return retval;
+    },
+  },
   en: {
     year: "numeric",
     month: "numeric",
@@ -14,6 +19,10 @@ const dateFormatConfig = {
     minute: "2-digit",
     hour12: false,
     formatMatcher: "basic",
+    format: (dateParts) => {
+      const retval = `${dateParts.year}-${dateParts.month}-${dateParts.day} ${dateParts.hour}:${dateParts.minute} ${dateParts.day}`;
+      return retval;
+    },
   },
   fa: {
     year: "numeric",
@@ -23,7 +32,10 @@ const dateFormatConfig = {
     minute: "2-digit",
     hour12: false,
     formatMatcher: "basic",
+    format: (dateParts) => {
+      const retval = `${dateParts.month}/${dateParts.year}${dateParts.day}`;
+      return retval;
+    },
   },
-};
-app.use(DateFormatPlugin, dateFormatConfig);
+});
 app.mount("#app");
