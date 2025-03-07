@@ -82,48 +82,47 @@ In your Vue template:
 The plugin accepts configuration options for different languages and formats:
 
 ```ts
-interface DateFormatOptions {
-  langKey: string;              // Default language key (e.g., 'en' or 'fa')
-  default?: {
-    format: (dateParts: DateParts) => string;
-  };
-  [key: string]: {             // Language-specific options
-    year: 'numeric';
-    month: 'numeric';
-    day: 'numeric';
-    hour: '2-digit';
-    minute: '2-digit';
-    hour12: boolean;
-    formatMatcher: 'basic';
-    format: (dateParts: DateParts) => string;
-  };
-}
-
-interface DateParts {
+interface DatePartType {
   year: string;
   month: string;
   day: string;
   hour: string;
   minute: string;
+  second: string;
+}
+
+type DateParts = (dateParts: DatePartType) => string;
+
+interface LocalizationOptions {
+  default: Intl.DateTimeFormatOptions & { format: DateParts };
+  [key: string]: Intl.DateTimeFormatOptions & { format: DateParts };
 }
 ```
 
 Example configuration:
 ```ts
 app.use(DateFormatPlugin, {
-  langKey: "fa",
+  langKey: "en",
   default: {
-    format: (dateParts) => `${dateParts.month}/${dateParts.year}`
-  },
-  en: {
     year: "numeric",
     month: "numeric",
     day: "numeric",
     hour: "2-digit",
     minute: "2-digit",
-    hour12: false,
+    second: "2-digit",
+    format: (dateParts) => 
+      `${dateParts.year}-${dateParts.month}-${dateParts.day} ${dateParts.hour}:${dateParts.minute}:${dateParts.second}`
+  },
+  en: {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
     formatMatcher: "basic",
-    format: (dateParts) => `${dateParts.year}-${dateParts.month}-${dateParts.day} ${dateParts.hour}:${dateParts.minute}`
+    format: (dateParts) => 
+      `${dateParts.month} ${dateParts.day}, ${dateParts.year} ${dateParts.hour}:${dateParts.minute}:${dateParts.second}`
   }
 })
 ```

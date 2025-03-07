@@ -1,6 +1,5 @@
-import { App, Plugin } from "vue";
-
 import { LocalizationOptions } from "./date-format.type";
+import { Plugin, App } from "vue";
 import vDateDirective from "./v-date-format.directive";
 
 const DateFormatPlugin: Plugin<LocalizationOptions & { langKey: string }> = {
