@@ -132,6 +132,7 @@ app.use(DateFormatPlugin, {
 - [@mahdimohamadzadeh](https://github.com/mahdimohamadzadeh)
 
 ## 🔗 Links
+[![email](https://img.shields.io/badge/email-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:mahdimohamadzadehdev@gmail.com)
 [![linkedin](https://img.shields.io/badge/linkedin-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](www.linkedin.com/in/mahdi-mohamadzadeh)
 [![twitter](https://img.shields.io/badge/twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white)](https://twitter.com/mahdi45858716)
 
