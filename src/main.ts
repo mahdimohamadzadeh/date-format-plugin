@@ -1,6 +1,7 @@
-export * from "./date-format.type.ts";
+export * from "./date-format.type";
 
-import DateFormatPlugin from "./date-format-plugin.ts";
-import vDateFormatDirective from "./v-date-format.directive.ts";
+import DateFormatPlugin from "./date-format-plugin";
+import { useDateFormat } from "./use-date-format";
+import vDateFormatDirective from "./v-date-format.directive";
 
-export { DateFormatPlugin, vDateFormatDirective };
+export { DateFormatPlugin, useDateFormat, vDateFormatDirective };

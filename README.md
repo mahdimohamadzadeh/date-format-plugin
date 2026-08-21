@@ -1,145 +1,186 @@
 # Vue Date Format Plugin
 
-A Vue.js plugin for formatting dates with support for different locales and customizable formatting options.
+A Vue.js plugin for formatting dates with support for different locales, custom formats, timezones, and full TypeScript types. It works seamlessly with Vue 3's Composition API, Options API, and Directives.
+
+## Features
+
+- **SSR-Safe Default Values** (defaults to `en-US` and `UTC`)
+- **Composition API**: `useDateFormat()`
+- **Options API**: `this.$dateFormat()`
+- **Template Directives**: `v-format-date`
+- **Timezone Support**: Easily switch to global timezones like `Asia/Tehran` or `America/New_York`
+- **Fallback Resolution**: Local overrides > Named formats > Global default > Standard Intl formatting
+- **Strong Typing**: Completely rewritten in strict TypeScript
 
 ## Installation
 
-```
-npm i date-format-plugin
+```bash
+npm install date-format-plugin
 # or
 yarn add date-format-plugin
 ```
 
-## Usage
+## Setup & Configuration
 
-```ts
+Configure the plugin in your `main.ts` or `main.js`:
+
+```typescript
 import { createApp } from 'vue'
-import DateFormatPlugin from 'date-format-plugin'
+import App from './App.vue'
+import { DateFormatPlugin, PluginOptions } from 'date-format-plugin'
 
 const app = createApp(App)
-app.use(DateFormatPlugin, {
-  langKey: 'fa', // default language key
-  default: {
-    format: (dateParts) => `${dateParts.month}/${dateParts.year}`
+
+const options: PluginOptions = {
+  // 1. Set global defaults
+  locale: 'en-US',
+  timeZone: 'UTC',
+
+  // 2. Add a default format function
+  defaultFormat: (parts) => {
+    return `${parts.year}-${parts.month}-${parts.day}`;
   },
-  en: {
-    year: 'numeric',
-    month: 'numeric',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-    formatMatcher: 'basic',
-    format: (dateParts) => {
-      return `${dateParts.year}-${dateParts.month}-${dateParts.day} ${dateParts.hour}:${dateParts.minute} ${dateParts.day}`
-    }
-  },
-  fa: {
-    year: 'numeric',
-    month: 'numeric',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-    formatMatcher: 'basic',
-    format: (dateParts) => {
-      return `${dateParts.month}/${dateParts.year}${dateParts.day}`
+
+  // 3. Define named formats for easy reuse
+  formats: {
+    'persian': {
+      locale: 'fa-IR',
+      timeZone: 'Asia/Tehran',
+      format: (parts) => `${parts.year}/${parts.month}/${parts.day} ${parts.hour}:${parts.minute}`
+    },
+    'short': {
+      year: '2-digit',
+      month: '2-digit',
+      day: '2-digit',
+      format: (parts) => `${parts.month}/${parts.day}/${parts.year}`
     }
   }
-})
+}
+
+app.use(DateFormatPlugin, options)
+app.mount('#app')
 ```
 
-In your Vue template:
+## Usage
+
+### 1. Vue Directive (`v-format-date`)
+
+The directive is globally registered. You can pass a direct value, or a configuration object to override settings.
+
 ```vue
 <template>
-  <!-- Using directive with custom format -->
-  <span
-    v-format-date="{
-      date: '2024-12-22T05:30:00.000Z',
-      options: {
-        format: (dateParts) => {
-          return `${dateParts.year}-${dateParts.month}-${dateParts.day} ${dateParts.hour}:${dateParts.minute}`
-        }
-      }
-    }"
-  ></span>
+  <!-- Simple usage: falls back to global default format -->
+  <span v-format-date="'2024-12-22T05:30:00.000Z'"></span>
 
-  <!-- Using global method -->
-  <div>{{ $dateFormat(new Date()) }}</div>
+  <!-- Using a predefined named format -->
+  <span v-format-date="{ 
+    date: '2024-12-22T05:30:00.000Z', 
+    formatName: 'persian' 
+  }"></span>
+
+  <!-- Ad-hoc local override -->
+  <span v-format-date="{ 
+    date: '2024-12-22T05:30:00.000Z', 
+    locale: 'de-DE',
+    timeZone: 'Europe/Berlin',
+    format: (parts) => \`\${parts.day}.\${parts.month}.\${parts.year}\`
+  }"></span>
 </template>
 ```
 
-## Features
+### 2. Composition API (`useDateFormat`)
 
-- Easy date formatting in Vue templates
-- Multiple locale support
-- Customizable date formats
-- Lightweight and performant
-- TypeScript support
+The recommended approach for modern Vue 3 apps using `<script setup>`.
 
-## Configuration
+```vue
+<script setup lang="ts">
+import { useDateFormat } from 'date-format-plugin'
 
-The plugin accepts configuration options for different languages and formats:
+const { format } = useDateFormat()
 
-```ts
-interface DatePartType {
-  year: string;
-  month: string;
-  day: string;
-  hour: string;
-  minute: string;
-  second: string;
-}
+const myDate = new Date()
 
-type DateParts = (dateParts: DatePartType) => string;
+// Output using global default
+const defaultString = format(myDate)
 
-interface LocalizationOptions {
-  default: Intl.DateTimeFormatOptions & { format: DateParts };
-  [key: string]: Intl.DateTimeFormatOptions & { format: DateParts };
-}
-```
+// Output using a predefined format
+const persianString = format(myDate, { formatName: 'persian' })
 
-Example configuration:
-```ts
-app.use(DateFormatPlugin, {
-  langKey: "en",
-  default: {
-    year: "numeric",
-    month: "numeric",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    format: (dateParts) => 
-      `${dateParts.year}-${dateParts.month}-${dateParts.day} ${dateParts.hour}:${dateParts.minute}:${dateParts.second}`
-  },
-  en: {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    formatMatcher: "basic",
-    format: (dateParts) => 
-      `${dateParts.month} ${dateParts.day}, ${dateParts.year} ${dateParts.hour}:${dateParts.minute}:${dateParts.second}`
-  }
+// Output using local override
+const customString = format(myDate, { 
+  locale: 'fa-IR', 
+  timeZone: 'Asia/Tehran',
+  hour: 'numeric',
+  minute: 'numeric'
 })
+</script>
 ```
 
-## Authors
+### 3. Options API (`$dateFormat`)
+
+For classic Vue architecture, the plugin automatically binds `$dateFormat` to your global properties.
+
+```vue
+<script lang="ts">
+export default {
+  data() {
+    return {
+      myDate: new Date()
+    }
+  },
+  computed: {
+    formattedDate() {
+      // Use the global default
+      return this.$dateFormat(this.myDate)
+    },
+    persianDate() {
+      // Use a local override
+      return this.$dateFormat(this.myDate, { formatName: 'persian' })
+    }
+  }
+}
+</script>
+```
+
+## Types Reference
+
+The package exports robust TypeScript definitions for all configurations:
+
+```typescript
+import { 
+  PluginOptions, 
+  LocalFormatOptions, 
+  DatePartType, 
+  FormatContext,
+  DirectiveBindingValue 
+} from 'date-format-plugin'
+```
+
+### `PluginOptions`
+The global configuration passed to `app.use()`.
+
+```typescript
+interface PluginOptions {
+  locale?: string;
+  timeZone?: string;
+  defaultFormat?: (parts: DatePartType, ctx: FormatContext) => string;
+  defaultOptions?: Intl.DateTimeFormatOptions;
+  formats?: Record<string, LocaleOptions>;
+}
+```
+
+### Fallback Chain
+
+When a date is formatted, the plugin evaluates options in this exact order:
+
+1. **Local Override** (e.g., `format(date, { locale: 'fa-IR' })`)
+2. **Named Format** (e.g., `formatName: 'persian'`)
+3. **Global Defaults** (`pluginOptions.locale`, `pluginOptions.defaultFormat`)
+4. **SSR-Safe Intl Defaults** (Defaults to `en-US` and `UTC`)
+
+## Support
 
 - [@mahdimohamadzadeh](https://github.com/mahdimohamadzadeh)
 
-## 🔗 Links
-[![email](https://img.shields.io/badge/email-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:mahdimohamadzadehdev@gmail.com)
-[![linkedin](https://img.shields.io/badge/linkedin-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](www.linkedin.com/in/mahdi-mohamadzadeh)
-[![twitter](https://img.shields.io/badge/twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white)](https://twitter.com/mahdi45858716)
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
 ## License
-
 [MIT](LICENSE)

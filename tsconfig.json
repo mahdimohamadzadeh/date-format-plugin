@@ -3,6 +3,7 @@
     "target": "ESNext",
     "useDefineForClassFields": true,
     "allowImportingTsExtensions": true,
+    "emitDeclarationOnly": true,
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "strict": true,
