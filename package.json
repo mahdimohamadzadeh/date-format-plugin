@@ -1,10 +1,11 @@
 {
   "name": "date-format-plugin",
-  "version": "0.0.9",
-  "description": "date-format-plugin",
+  "version": "0.0.10",
+  "description": "Lightweight, SSR-safe Vue 3 date formatting plugin with Composition API, Options API, and directive support. Multi-locale, timezone-aware date formatting built on the native Intl API, with full TypeScript types.",
   "author": {
     "name": "Mahdi Mohamadzadeh",
-    "email": "prowebsi998@gmail.com"
+    "email": "prowebsi998@gmail.com",
+    "url": "https://github.com/mahdimohamadzadeh"
   },
   "license": "MIT",
   "type": "module",
@@ -12,8 +13,36 @@
   "files": [
     "dist"
   ],
+  "homepage": "https://github.com/mahdimohamadzadeh/date-format-plugin#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mahdimohamadzadeh/date-format-plugin.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mahdimohamadzadeh/date-format-plugin/issues"
+  },
   "keywords": [
-    "date-format-plugin"
+    "vue",
+    "vue3",
+    "vuejs",
+    "date-format-plugin",
+    "date-format",
+    "date-formatting",
+    "date",
+    "time",
+    "datetime",
+    "formatter",
+    "intl",
+    "i18n",
+    "l10n",
+    "localization",
+    "locale",
+    "timezone",
+    "vue-plugin",
+    "vue-directive",
+    "composition-api",
+    "typescript",
+    "ssr"
   ],
   "main": "./dist/date-format-plugin.umd.cjs",
   "module": "./dist/date-format-plugin.js",
