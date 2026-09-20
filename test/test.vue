@@ -69,8 +69,8 @@ const customFormatFunc = (dateParts: DatePartType) => {
               <span class="demo-value" v-format-date="testDate"></span>
             </div>
             <div class="demo-row">
-              <span class="demo-label">Named format (fa)</span>
-              <span class="demo-value" v-format-date="{ date: testString, formatName: 'fa' }"></span>
+              <span class="demo-label">Named format (uk)</span>
+              <span class="demo-value" v-format-date="{ date: testString, formatName: 'uk' }"></span>
             </div>
           </div>
           <div class="code-snippet">
@@ -96,8 +96,8 @@ const customFormatFunc = (dateParts: DatePartType) => {
             <div class="cl cl-blank"></div>
             <div class="cl"><span class="ck">const</span> <span class="cb">{</span> format <span class="cb">}</span> = <span class="cf">useDateFormat</span>()</div>
             <div class="cl"><span class="ck">const</span> result = <span class="cf">format</span>(myDate, {</div>
-            <div class="cl cl-indent"><span class="ca">locale</span>: <span class="cs">'fa-IR'</span>,</div>
-            <div class="cl cl-indent"><span class="ca">timeZone</span>: <span class="cs">'Asia/Tehran'</span></div>
+            <div class="cl cl-indent"><span class="ca">locale</span>: <span class="cs">'en-GB'</span>,</div>
+            <div class="cl cl-indent"><span class="ca">timeZone</span>: <span class="cs">'Europe/London'</span></div>
             <div class="cl">})</div>
           </div>
         </div>
@@ -118,9 +118,9 @@ const customFormatFunc = (dateParts: DatePartType) => {
               <span class="locale-out" v-format-date="{ date: testString, locale: 'en-US', timeZone: 'UTC', year: 'numeric', month: 'long', day: 'numeric' }"></span>
             </div>
             <div class="locale-row">
-              <span class="locale-flag">🇮🇷</span>
-              <span class="locale-name">fa-IR / Tehran</span>
-              <span class="locale-out" v-format-date="{ date: testString, locale: 'fa-IR', timeZone: 'Asia/Tehran', year: 'numeric', month: 'long', day: 'numeric' }"></span>
+              <span class="locale-flag">🇬🇧</span>
+              <span class="locale-name">en-GB / London</span>
+              <span class="locale-out" v-format-date="{ date: testString, locale: 'en-GB', timeZone: 'Europe/London', year: 'numeric', month: 'long', day: 'numeric' }"></span>
             </div>
             <div class="locale-row">
               <span class="locale-flag">🇫🇷</span>
@@ -179,7 +179,7 @@ const customFormatFunc = (dateParts: DatePartType) => {
             <div class="chain-step">
               <span class="chain-num">2</span>
               <span class="chain-text">Named Format</span>
-              <span class="chain-ex">formatName: 'persian'</span>
+              <span class="chain-ex">formatName: 'uk'</span>
             </div>
             <div class="chain-arrow">↓</div>
             <div class="chain-step">
