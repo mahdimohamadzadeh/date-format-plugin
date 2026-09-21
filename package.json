@@ -1,6 +1,6 @@
 {
   "name": "date-format-plugin",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "Lightweight, SSR-safe Vue 3 date formatting plugin with Composition API, Options API, and directive support. Multi-locale, timezone-aware date formatting built on the native Intl API, with full TypeScript types.",
   "author": {
     "name": "Mahdi Mohamadzadeh",
