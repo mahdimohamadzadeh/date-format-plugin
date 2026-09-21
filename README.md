@@ -20,6 +20,7 @@ Use it however your app is built: as a **Composition API composable** (`useDateF
   - [Vue Directive](#1-vue-directive-v-format-date)
   - [Composition API](#2-composition-api-usedateformat)
   - [Options API](#3-options-api-dateformat)
+- [Using formatDate outside Vue](#using-formatdate-outside-vue)
 - [Types Reference](#types-reference)
 - [Fallback Chain](#fallback-chain)
 - [Browser & SSR Support](#browser--ssr-support)
@@ -44,6 +45,7 @@ It's a good fit when you need:
 - **Composition API**: `useDateFormat()`
 - **Options API**: `this.$dateFormat()`
 - **Template Directive**: `v-format-date`
+- **Framework-Independent API**: `formatDate()` for use outside Vue — plain `.ts`/`.util.ts` files, services, scripts
 - **Timezone Support**: Format any date in any IANA timezone, e.g. `Europe/London`, `America/New_York`
 - **Named Formats**: Define reusable formats once and reference them by name anywhere in your app
 - **Fallback Resolution**: Local overrides > Named formats > Global default > Standard Intl formatting
@@ -183,6 +185,102 @@ export default {
 </script>
 ```
 
+## Using formatDate outside Vue
+
+`useDateFormat()` and `this.$dateFormat()` both rely on a Vue `setup()`/component
+context to read the options you passed to `app.use(DateFormatPlugin, options)`.
+That's a good fit for components, composables, and directives — but it means
+they can't be called from plain TypeScript: `.util.ts` helpers, services,
+Pinia stores' non-setup code, Node scripts, tests, etc.
+
+For that, import `formatDate` directly. It's the same context-free formatter
+that `useDateFormat()` calls internally under the hood — there is only one
+formatting implementation in this package. Because it takes no Vue context,
+you pass the same `PluginOptions` you'd otherwise configure via `app.use()`
+explicitly, every call.
+
+**When to use which:**
+
+| | Use inside Vue (`setup()`, composables, directives) | Use in plain `.ts` / `.util.ts` files, services, scripts |
+|---|---|---|
+| API | `useDateFormat()` | `formatDate()` |
+| Reads plugin options from | `app.use(DateFormatPlugin, options)` via `inject()` | An options object you pass in explicitly |
+| Requires | An active component/composable context | Nothing — works anywhere JS runs |
+
+### Plain `.util.ts` file
+
+```typescript
+// date.util.ts
+import { formatDate, PluginOptions } from 'date-format-plugin'
+
+// Typically the same object you pass to app.use(DateFormatPlugin, options)
+const dateOptions: PluginOptions = {
+  locale: 'en-US',
+  timeZone: 'UTC',
+  formats: {
+    shortDate: {
+      locale: 'en-US',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      format: (parts) => `${parts.month}/${parts.day}/${parts.year}`
+    }
+  }
+}
+
+export function formatOrderDate(date: string | number | Date) {
+  return formatDate(date, dateOptions, { formatName: 'shortDate' })
+}
+```
+
+### Using a named format
+
+```typescript
+import { formatDate } from 'date-format-plugin'
+import { dateOptions } from './date.util'
+
+const result = formatDate(
+  '2024-12-22T05:30:00.000Z',
+  dateOptions,
+  { formatName: 'shortDate' }
+)
+// "12/22/2024"
+```
+
+### Explicit Gregorian / Latin-digit output for machine-readable dates
+
+`formatDate` never converts a result to a non-Gregorian calendar or
+non-Latin digits on its own — it only does what the `locale`/`calendar`/
+`numberingSystem` options tell it to. But if your app's global/plugin
+locale is set to something like `fa-IR` for user-facing text, any call
+that inherits that locale will render a Jalali calendar with Persian
+digits. For internal date keys, API payloads, or log timestamps that must
+stay machine-readable, pass explicit overrides in `localOptions` so they
+don't inherit the app's locale:
+
+```typescript
+import { formatDate, PluginOptions } from 'date-format-plugin'
+
+const appOptions: PluginOptions = { locale: 'fa-IR' }
+
+// User-facing: follows the app's Persian locale (Jalali calendar, Persian digits)
+formatDate(new Date(), appOptions)
+
+// Machine-readable: explicitly pinned to Gregorian + Latin digits,
+// regardless of the app's locale
+formatDate(new Date(), appOptions, {
+  locale: 'en-US',
+  calendar: 'gregory',
+  numberingSystem: 'latn',
+  timeZone: 'UTC',
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+  format: (parts) => `${parts.year}-${parts.month}-${parts.day}`
+})
+// "2024-12-22"
+```
+
 ## Types Reference
 
 The package exports robust TypeScript definitions for all configurations:
@@ -229,7 +327,7 @@ Because formatting is powered by the native `Intl.DateTimeFormat` API, `date-for
 No. It relies on the `Intl` API already present in your JS runtime, keeping the install size minimal.
 
 **Can I use it without Vue's global plugin registration?**
-Yes — `useDateFormat()` and the exported `formatDate` logic work standalone; `app.use()` is only needed if you also want the directive and `$dateFormat` global.
+Yes — `useDateFormat()` works standalone inside a component/composable; `app.use()` is only needed if you also want the directive and `$dateFormat` global. Outside Vue entirely (plain `.ts`/`.util.ts` files), use the exported [`formatDate`](#using-formatdate-outside-vue) function directly — see that section for details.
 
 **Does it support locales other than English?**
 Yes — pass any valid [BCP 47 locale tag](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl#locale_identification_and_negotiation) (e.g. `de-DE`, `ja-JP`, `fr-FR`) to `locale`; the examples above use `en-US` and `en-GB` for clarity.
